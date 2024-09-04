@@ -1,0 +1,14 @@
+{ "columns":17,
+ "image":"images\/spritesheet-breakout.png",
+ "imageheight":337,
+ "imagewidth":559,
+ "margin":0,
+ "name":"spritesheet-breakout",
+ "spacing":0,
+ "tilecount":357,
+ "tiledversion":"1.10.2",
+ "tileheight":16,
+ "tilewidth":32,
+ "type":"tileset",
+ "version":"1.10"
+}
