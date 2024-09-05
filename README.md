@@ -1,8 +1,4 @@
 # arkanoid
 
 Images from here: https://petraheim.itch.io/breakout-pixelart
-
-Удар в угол блока по касательной, 
-обрабатывается как удар в сторону блока, в зависимости от направления движения шарика,
-
-Удары между блоками обрабатываются как удар по одному из блоков.
+Audio from here: https://www.kenney.nl/assets/category:Audio
