@@ -8,8 +8,8 @@ import { SettingsStage } from "./game/SettingsStage.js";
 SystemSettings.customSettings = settings;
 SystemSettings.worldSize.width = settings.width;
 SystemSettings.worldSize.height = settings.height;
-SystemSettings.gameOptions.debug.boundaries.drawLayerBoundaries = true;
-SystemSettings.gameOptions.debug.boundaries.drawObjectBoundaries = true;
+//SystemSettings.gameOptions.debug.boundaries.drawLayerBoundaries = true;
+//SystemSettings.gameOptions.debug.boundaries.drawObjectBoundaries = true;
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
