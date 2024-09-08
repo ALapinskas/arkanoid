@@ -8,6 +8,21 @@
             overflow: hidden;
             margin: 0;
         }
+        .container {
+            background-color: #ebf9ffd9;
+            width: 800px;
+            margin: auto;
+        }
+        #info {
+            height: 32px;
+           
+        }
+        #info-content {
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+        }
         #game_map {
             display: flex;
             justify-content: center;
@@ -15,7 +30,14 @@
     </style>
 </head>
 <body>
-    <div id="game_map"></div>
-
+    <div class="container">
+        <div id="info">
+            <div id="info-content">
+                <span id="level-cont">Level: <span id="level"></span></span><span id="speed-cont">Speed: <span id="speed"></span></span><span id="blocks-cont">Blocks left: <span id="blocks"></span></span><span id="lives-cont">Lives: <span id="lives"></span></span>
+            </div>
+        </div>
+        <div id="game_map"></div>
+    </div>
+    
     <script type="module" src="./bundle.js?r=2"></script>
 </body>

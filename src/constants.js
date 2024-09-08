@@ -25,12 +25,23 @@ export const CONST = {
         IMPACT_SOFT_2: "impactSoft2",
         IMPACT_SOFT_3: "impactSoft3",
         IMPACT_SOFT_4: "impactSoft4",
-
+        IMPACT_METAL_0: "impactMetal0",
+        IMPACT_METAL_1: "impactMetal1",
+        IMPACT_METAL_2: "impactMetal2",
+        IMPACT_METAL_3: "impactMetal3",
+        IMPACT_METAL_4: "impactMetal4",
+        IMPACT_PLATE_0: "impactPlate0",
+        IMPACT_PLATE_1: "impactPlate1",
+        IMPACT_PLATE_2: "impactPlate2",
+        IMPACT_PLATE_3: "impactPlate3",
+        IMPACT_PLATE_4: "impactPlate4"
     },
     IMAGE: {
         PADDLE_BLUE: "paddle_blue"
     },
     ANIMATIONS: {
-        DESTROY_GREEN: "destroy_green"
+        DESTROY_GREEN: "destroy_green",
+        DESTROY_BLUE:  "destroy_blue",
+        DESTROY_ORANGE: "destroy_orange"
     }
 };

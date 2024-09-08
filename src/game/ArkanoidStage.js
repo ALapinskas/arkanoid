@@ -141,19 +141,26 @@ function proj(a, b) {
 export class ArkanoidStage extends GameStage {
 
     #paddle;
-
-    #ballDirection = Math.PI / 1.4;
+    #startBallDirection = Math.PI / 1.6;
+    #ballDirection = Math.PI / 1.6;
     #barSpeed = 5;
-    #ballSpeed = 5; /// 5 is max speed without bugs!
+    #immutable = false;
+    #maxBallSpeed = 5; /// 5 is max speed without bugs!
+    #ballSpeed = 5; 
     #ballMoveInterval = 1; // ms
     #ballRadius = 5;
     #ball;
+
+    #cornerHitBallSpeedIncrease = 0.05;
+    #blockHitBallSpeedIncrease = 0.01;
 
     #moveInterval;
     #isStickyBar = false;
     #isBallSticked = true;
     #keyPressed = { ArrowUp: false, KeyW: false, ArrowLeft: false, KeyA: false, ArrowRight: false, KeyD: false, ArrowDown: false, KeyS: false, Space: false };
-    #tilemapKey = "blocksMap";
+    #tilemapKeyLevel1 = "blocksMap1";
+    #tilemapKeyLevel2 = "blocksMap2";
+    #tilemapKeyLevel3 = "blocksMap3";
     #ballImageKey  = "ball-key";
     #paddleImageKey = "paddle-key";
     #gameBlocks;
@@ -163,6 +170,22 @@ export class ArkanoidStage extends GameStage {
     #collisionGlass = [];
 
     #collisionSoft = [];
+
+    #collisionMetal = [];
+
+    #collisionPlate = [];
+    #currentLevel = 1;
+
+    #lives = 3;
+
+    #blocksLeft = 0;
+
+    #infoBlock = document.getElementById("info-content");
+    #levelInfo = document.getElementById("level");
+    #blocksInfo = document.getElementById("blocks");
+    #livesInfo = document.getElementById("lives");
+
+    #speedInfo = document.getElementById("speed");
     constructor() {
         super();
     }
@@ -171,7 +194,9 @@ export class ArkanoidStage extends GameStage {
         this.iLoader.addImage(this.#ballImageKey, "/assets/images/ball.png");
         this.iLoader.addImage(this.#paddleImageKey, "/assets/images/paddle.png");
         this.iLoader.addImage("spritesheet-breakout-f", "/assets/images/spritesheet-breakout-fixed.png");
-        this.iLoader.addTileMap(this.#tilemapKey, "/assets/level2.tmj");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel1, "/assets/level1.tmj");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel2, "/assets/level2.tmj");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel3, "/assets/level3.tmj");
         this.iLoader.addImage(CONST.IMAGE.PADDLE_BLUE, "/assets/images/paddleBlu.png");
 
         this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_0, "/assets/audio/impactTin_medium_000.ogg");
@@ -191,6 +216,18 @@ export class ArkanoidStage extends GameStage {
         this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_2, "/assets/audio/impactSoft_medium_002.ogg");
         this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_3, "/assets/audio/impactSoft_medium_003.ogg");
         this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_4, "/assets/audio/impactSoft_medium_004.ogg");
+
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_0, "/assets/audio/impactMetal_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_1, "/assets/audio/impactMetal_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_2, "/assets/audio/impactMetal_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_3, "/assets/audio/impactMetal_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_4, "/assets/audio/impactMetal_medium_004.ogg");
+
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_0, "/assets/audio/impactPlate_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_1, "/assets/audio/impactPlate_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_2, "/assets/audio/impactPlate_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_3, "/assets/audio/impactPlate_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_4, "/assets/audio/impactPlate_medium_004.ogg");
     }
 
     init() {
@@ -200,8 +237,9 @@ export class ArkanoidStage extends GameStage {
         
         const background = this.draw.rect(0, 0, w, h, this.systemSettings.customSettings.gameBackgroundColor);
 
-        this.#gameBlocks = this.draw.tiledLayer("green_blocks", this.#tilemapKey, true);
-
+        this.#immutable = this.systemSettings.customSettings.immutable;
+        this.#infoBlock.style.display = "flex";
+        
         this.#collisionAudio.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_TIN_0));
         this.#collisionAudio.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_TIN_1));
         this.#collisionAudio.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_TIN_2));
@@ -220,11 +258,47 @@ export class ArkanoidStage extends GameStage {
         this.#collisionSoft.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_SOFT_3));
         this.#collisionSoft.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_SOFT_4));
 
+        this.#collisionMetal.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_METAL_0));
+        this.#collisionMetal.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_METAL_1));
+        this.#collisionMetal.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_METAL_2));
+        this.#collisionMetal.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_METAL_3));
+        this.#collisionMetal.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_METAL_4));
+
+        this.#collisionPlate.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_PLATE_0));
+        this.#collisionPlate.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_PLATE_1));
+        this.#collisionPlate.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_PLATE_2));
+        this.#collisionPlate.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_PLATE_3));
+        this.#collisionPlate.push(this.iLoader.getAudio(CONST.AUDIO.IMPACT_PLATE_4));
+
         this.#paddle = this.draw.image(w/2, h - 20, 64, 14, this.#paddleImageKey, 0);
-        this.#ball = this.draw.image(this.#paddle.x, this.#paddle.y - this.#paddle.height / 2 - this.#ballRadius, 16, 16, this.#ballImageKey, 1, {r:this.#ballRadius});
     }
     start() {
+        console.log("=====>>>>>start");
+        
+        this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
         this.registerEventListeners();
+        this.startScene();
+    }
+
+    startScene() {
+        switch(this.#currentLevel) {
+            case 1:
+                this.#gameBlocks = this.draw.tiledLayer("green_blocks", this.#tilemapKeyLevel1, true);
+                break;
+            case 2:
+                this.#gameBlocks = this.draw.tiledLayer("green_blocks", this.#tilemapKeyLevel2, true);
+                break;
+            case 3:
+                this.#gameBlocks = this.draw.tiledLayer("green_blocks", this.#tilemapKeyLevel3, true);
+                break;
+        }
+        
+        this.#countBlocksLeft();
+        this.#isBallSticked = true;
+        this.#ball = this.draw.image(this.#paddle.x, this.#paddle.y - this.#paddle.height / 2 - this.#ballRadius, 16, 16, this.#ballImageKey, 1, {r:this.#ballRadius});
+        this.#setLives();
+        this.#setLevel();
+        this.#setSpeed();
     }
 
     stop() {
@@ -341,6 +415,7 @@ export class ArkanoidStage extends GameStage {
 
     #pushBall() {
         this.#moveInterval = setInterval(() => {
+            console.log("direction: ", this.#ballDirection);
             this.moveBall(this.#ballDirection);
         }, this.#ballMoveInterval);
     }
@@ -401,15 +476,9 @@ export class ArkanoidStage extends GameStage {
 
             }
            
-            if (newDirection > Math.PI) {
-                newDirection = Math.PI - (newDirection - Math.PI);
-                console.log("overflow +pi");
-            }
-            if (newDirection < - Math.PI) {
-                newDirection = -Math.PI - (Math.PI + newDirection);
-                console.log("overflow -pi");
-            }
-            console.log("new direction: ", newDirection);
+            newDirection = this.#fixOverflowDIrection(newDirection);
+
+            console.log("paddle collision, new direction: ", newDirection);
             if (!newDirection) {
                 console.log("????");
             }
@@ -436,16 +505,16 @@ export class ArkanoidStage extends GameStage {
                     
                 if (surface1.x1 === surface1.x2 && surface2.y1 === surface2.y2 && surface1.y2 > surface1.y1 && surface2.x2 > surface2.x1) {
                     console.log("=====>>>right top corner");
-                    xShift -= this.#ballRadius;
-                    yShift -= this.#ballRadius;
+                    xShift -= (this.#ballRadius + 1);
+                    yShift -= (this.#ballRadius + 1);
                     switch(true) {
                         case this.#ballDirection >= Math.PI/2 && this.#ballDirection < Math.PI:
                             console.log("moving from bottom right to left top, change to top right");
                             newDirection = this.#ballDirection - Math.PI/2 + CORNER_SHIFT;
                             break;
                         case this.#ballDirection > -Math.PI/2  && this.#ballDirection < 0:
-                            newDirection = this.#ballDirection + CORNER_SHIFT;
-                            console.log("moving from top left to right bottom, change to right bottom");
+                            newDirection = -this.#ballDirection + CORNER_SHIFT;
+                            console.log("moving from top left to right bottom, change to right top");
                             break;
                         case this.#ballDirection <= -Math.PI/2 && this.#ballDirection > -Math.PI:
                             newDirection = this.#ballDirection + Math.PI/2 - CORNER_SHIFT;
@@ -461,8 +530,8 @@ export class ArkanoidStage extends GameStage {
                     }
                 } else if (surface1.x1 === surface1.x2 && surface2.y1 === surface2.y2 && surface1.y1 > surface1.y2 && surface2.x2 > surface2.x1) {
                     console.log("=====>>>left top corner");
-                    xShift += this.#ballRadius;
-                    yShift -= this.#ballRadius;
+                    xShift += (this.#ballRadius + 1);
+                    yShift -= (this.#ballRadius + 1);
                     switch(true) {
                         case this.#ballDirection >= 0 && this.#ballDirection < Math.PI/2:
                             console.log("moving from bottom left to right top, change to top left");
@@ -474,7 +543,7 @@ export class ArkanoidStage extends GameStage {
                             break;
                         case this.#ballDirection <= -Math.PI/2 && this.#ballDirection > -Math.PI:
                             newDirection = -this.#ballDirection - CORNER_SHIFT;
-                            console.log("moving from top right to left bottom, change to bottom left");
+                            console.log("moving from top right to left bottom, change to top left");
                             break;
                         default:
                             console.warn("unknown corner hit!!!");
@@ -486,12 +555,12 @@ export class ArkanoidStage extends GameStage {
                     }
                 } else if (surface1.x1 === surface1.x2 && surface2.y1 === surface2.y2 && surface1.y2 > surface1.y1 && surface2.x1 > surface2.x2) {
                     console.log("=====>>>>right bottom corner");
-                    xShift -= this.#ballRadius;
-                    yShift += this.#ballRadius;
+                    xShift -= (this.#ballRadius + 1);
+                    yShift += (this.#ballRadius + 1);
                     switch(true) {
                         case this.#ballDirection >= 0 && this.#ballDirection < Math.PI/2:
-                            console.log("moving from bottom left to right top, change to top right");
-                            newDirection = this.#ballDirection - CORNER_SHIFT;
+                            console.log("moving from bottom left to right top, change to bottom right");
+                            newDirection = -this.#ballDirection + CORNER_SHIFT;
                             break;
                         case this.#ballDirection >= Math.PI/2 && this.#ballDirection < Math.PI:
                             newDirection = this.#ballDirection - Math.PI/2 - CORNER_SHIFT;
@@ -512,8 +581,8 @@ export class ArkanoidStage extends GameStage {
                     }
                 } else if (surface1.x1 === surface1.x2 && surface2.y1 === surface2.y2 && surface1.y1 > surface1.y2 && surface2.x1 > surface2.x2) {
                     console.log("=====>>>>>left bottom corner");
-                    xShift += this.#ballRadius;
-                    yShift += this.#ballRadius;
+                    xShift += (this.#ballRadius + 1);
+                    yShift += (this.#ballRadius + 1);
                     switch(true) {
                         case this.#ballDirection >= 0 && this.#ballDirection < Math.PI/2:
                             console.log("moving from bottom left to right top, change to top left");
@@ -524,8 +593,8 @@ export class ArkanoidStage extends GameStage {
                             console.log("moving from bottom right to left top, change to bottom left");
                             break;
                         case this.#ballDirection > -Math.PI/2  && this.#ballDirection < 0:
-                            newDirection = this.#ballDirection - CORNER_SHIFT;
-                            console.log("moving from top left to right bottom, change to right bottom");
+                            newDirection = this.#ballDirection - Math.PI/2 + CORNER_SHIFT;
+                            console.log("moving from top left to right bottom, change to left bottom");
                             break;
                         default:
                             console.warn("unknown corner hit!!!");
@@ -543,7 +612,7 @@ export class ArkanoidStage extends GameStage {
                     this.iSystem.stopGameStage(CONST.STAGE.GAME);
                     throw new Error("Multiple block collision!");
                 }
-                
+                this.#increaseBallSpeed(this.#cornerHitBallSpeedIncrease);
             } else {
                 collisionSurface = collisionSurface[0];
                 isHorizontal = this.#isHorizontal(collisionSurface);
@@ -555,6 +624,10 @@ export class ArkanoidStage extends GameStage {
                     const isBottom = collisionSurface.y1 === this.systemSettings.customSettings.height;
                     if (isBottom) {
                         console.warn("bottom reached!");
+                        if (this.#immutable === false) {
+                            this.#die();
+                            return; // stop execution
+                        }
                     }
                     const isTop = collisionSurface.y1 === 0;
                     if (isTop) {
@@ -562,7 +635,10 @@ export class ArkanoidStage extends GameStage {
                     }
                 }
 
-                if (collisionSurface.x1 === 0 || collisionSurface.x1 === this.systemSettings.customSettings.width) {
+                if (
+                    (collisionSurface.x1 === 0 || collisionSurface.x1 === this.systemSettings.customSettings.width) &&
+                    (collisionSurface.y1 === 0 || collisionSurface.y1 === this.systemSettings.customSettings.height)
+                ) {
                     isWorldSurface = true;
                 }
 
@@ -571,11 +647,11 @@ export class ArkanoidStage extends GameStage {
                         if (isHorizontal) {
                             console.log("moving from bottom to right top, change to bottom right");
                             newDirection = -this.#ballDirection;
-                            yShift += this.#ballRadius;
+                            yShift += (this.#ballRadius + 1);
                         } else {
                             console.log("moving from bottom to right top, change to top left");
                             newDirection = Math.PI - this.#ballDirection;
-                            xShift += this.#ballRadius;
+                            xShift += (this.#ballRadius + 1);
                         }
                         
                         break;
@@ -587,7 +663,7 @@ export class ArkanoidStage extends GameStage {
                         } else {
                             newDirection = Math.PI - this.#ballDirection;
                             console.log("moving from bottom to left top, change to top right");
-                            xShift -= this.#ballRadius;
+                            xShift -= (this.#ballRadius + 1);
                         }
                         
                         break;
@@ -595,7 +671,7 @@ export class ArkanoidStage extends GameStage {
                         if (isHorizontal) {
                             newDirection = -this.#ballDirection;
                             console.log("moving from top to left bottom, change to top left");
-                            yShift -= this.#ballRadius;
+                            yShift -= (this.#ballRadius + 1);
                         } else {
                             newDirection = -Math.PI + (-this.#ballDirection);
                             console.log("moving from top to left bottom, change to bottom right");
@@ -606,27 +682,23 @@ export class ArkanoidStage extends GameStage {
                     case this.#ballDirection < 0  && this.#ballDirection > -Math.PI/2:
                         if (isHorizontal) {
                             newDirection = -this.#ballDirection;
-                            yShift -= this.#ballRadius;
+                            yShift -= (this.#ballRadius + 1);
                             console.log("moving from top to right bottom, change to top right");
                         } else {
                             newDirection = -Math.PI + (-this.#ballDirection);
                             console.log("moving from top to right bottom, change to bottom left");
-                            xShift += this.#ballRadius;
+                            xShift += (this.#ballRadius + 1);
                         }
                         
                         break;
                 }
-                
+                this.#increaseBallSpeed(this.#blockHitBallSpeedIncrease);
             }
             console.log("old dir: ", this.#ballDirection);
             // a monkey patch, direction set should be fixed
-            if (newDirection > Math.PI) {
-                newDirection = newDirection - Math.PI/2;
-            }
-            if (newDirection < -Math.PI) {
-                newDirection = newDirection + Math.PI/2;
-            }
+            newDirection = this.#fixOverflowDIrection(newDirection);
             //
+            console.log("is world surface: ", isWorldSurface);
             if (isWorldSurface === false) {
                 let blockIndex;
 
@@ -691,8 +763,8 @@ export class ArkanoidStage extends GameStage {
                     case 226: // blue block destroy
                         this.#collisionGlass[rand].play();
                         removeSurface= this.draw.image(roundX + 16, roundY + 8, 32, 16, "spritesheet-breakout-f", 226);
-                        removeSurface.addAnimation(CONST.ANIMATIONS.DESTROY_GREEN, [227,228,229,230,231,232,233], false);
-                        removeSurface.emit(CONST.ANIMATIONS.DESTROY_GREEN);
+                        removeSurface.addAnimation(CONST.ANIMATIONS.DESTROY_BLUE, [227,228,229,230,231,232,233], false);
+                        removeSurface.emit(CONST.ANIMATIONS.DESTROY_BLUE);
                         this.#gameBlocks.layerData.data[blockIndex] = 0;
                         
                         console.log("data block after replacement: ", this.#gameBlocks.layerData.data[blockIndex]);
@@ -700,24 +772,48 @@ export class ArkanoidStage extends GameStage {
                             removeSurface.destroy();
                         }, 500);
                         break;
+                    case 274: //orange block hit 1
+                        this.#collisionPlate[rand].play();
+                        this.#gameBlocks.layerData.data[blockIndex] = 277;
+                        break;
+                    case 277: //orange block hit 2
+                        this.#collisionPlate[rand].play();
+                        this.#gameBlocks.layerData.data[blockIndex] = 278;
+                        break;
+                    case 278: //orange block destroy
+                        this.#collisionPlate[rand].play();
+                        removeSurface= this.draw.image(roundX + 16, roundY + 8, 32, 16, "spritesheet-breakout-f", 278);
+                        removeSurface.addAnimation(CONST.ANIMATIONS.DESTROY_ORANGE, [279,280,281,282,283,284,285], false);
+                        removeSurface.emit(CONST.ANIMATIONS.DESTROY_ORANGE);
+                        this.#gameBlocks.layerData.data[blockIndex] = 0;
+                        
+                        console.log("data block after replacement: ", this.#gameBlocks.layerData.data[blockIndex]);
+                        setTimeout(() => {
+                            removeSurface.destroy();
+                        }, 500);
+                        break;
+                    case 308: // immutable block do nothing
                     case 292: // immutable block do nothing
                         this.#collisionSoft[rand].play();
                         break;
                     case 0:
+                        this.draw.rect(roundX, roundY, 32, 16, "rgba(194,24,7,0.1)");
                         console.log(collisionSurface);
                         console.log(this.#ballDirection);
+                        console.log(this.#gameBlocks.layerData.data);
                         clearInterval(this.#moveInterval);
-                        this.iSystem.stopGameStage(CONST.STAGE.GAME);
-                        throw new Error("Empty block collision!");
+                        setTimeout(() => {
+                            this.iSystem.stopGameStage(CONST.STAGE.GAME);
+                            throw new Error("Empty block collision!");
+                        }, 32); // pass some time to draw rect
                 }
-                
-                
-                console.log("recalculate direction");
-                console.log("new dir: ", newDirection);
             } else {
                 this.#collisionAudio[rand].play();
             }
+            console.log("surface hit new dir: ", newDirection);
             this.#ballDirection = newDirection;
+            this.#countBlocksLeft();
+            
         }
     }
 
@@ -730,6 +826,110 @@ export class ArkanoidStage extends GameStage {
         this.#keyPressed[code] = false;
     };
 
+    #countBlocksLeft() {
+        const blocks = this.#gameBlocks.layerData.data;
+
+        const blocksLeft = blocks.filter((id) => id === 206 || id === 223 || id === 226 || id === 274 || id === 277 || id === 278).length;
+
+        if (blocksLeft === 0) {
+            if (this.#currentLevel === 3) {
+                alert("You win!!!");
+                clearInterval(this.#moveInterval);
+                this.#moveInterval = undefined;;
+                this.#ball.destroy();
+                this.#gameBlocks.isRemoved = true; // remove hack
+            } else {
+                alert("Level#"+this.#currentLevel + " done!");
+                clearInterval(this.#moveInterval);
+                this.#moveInterval = undefined;;
+                this.#ball.destroy();
+                this.#ballDirection = this.#startBallDirection;
+                this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
+                this.#gameBlocks.isRemoved = true; // remove hack
+                this.#currentLevel++;
+                console.log("set ball direction to ", this.#startBallDirection);
+                console.log("ball direction: ", this.#ballDirection);
+                this.stageData._clearBoundaries();
+                //this.iSystem.stopGameStage(CONST.STAGE.GAME);
+                setTimeout(() => {
+                    this.startScene();
+                    //this.iSystem.startGameStage(CONST.STAGE.GAME);
+                }, 32);
+            }
+            
+        }
+        console.log("blocks left: ", blocksLeft);
+        this.#blocksInfo.innerText = blocksLeft;
+        this.#blocksLeft = blocksLeft;
+    }
+
+    #setLives() {
+        this.#livesInfo.innerText = this.#lives;
+    }
+
+    #setLevel() {
+        this.#levelInfo.innerText = this.#currentLevel;
+    }
+
+    #setSpeed() {
+        this.#speedInfo.innerText = parseInt(this.#ballSpeed);
+    }
+
+    #fixOverflowDIrection(newDirection) {
+        if (newDirection > Math.PI) {
+            newDirection = Math.PI - (newDirection - Math.PI);
+            console.log("overflow +pi");
+            console.log(newDirection);
+        }
+        if (newDirection < -Math.PI) {
+            newDirection = -Math.PI - (Math.PI + newDirection);
+            console.log("overflow -pi");
+            console.log(newDirection);
+        }
+        
+        // avoid too small horizontal angles
+        if (newDirection > 0 && (((Math.PI - newDirection) < 0.2) || (newDirection < 0.2))) {
+            newDirection -= 0.2;
+            console.log("too big reduce: ", newDirection);
+        }
+
+        if (newDirection < 0 && (((Math.PI + newDirection) < 0.2) || (newDirection > -0.2))) {
+            newDirection += 0.2;
+            console.log("too small increase: ", newDirection);
+        }
+
+        return newDirection;
+    }
+
+    #die = () => {
+        this.#lives -= 1;
+        if (this.#lives < 0) {
+            alert("Game over!!!");
+            clearInterval(this.#moveInterval);
+            this.#moveInterval = undefined;;
+            this.#ball.destroy();
+        } else {
+            alert("You die! Lives left: " + this.#lives);
+            this.#setLives();
+            clearInterval(this.#moveInterval);
+            this.#moveInterval = undefined;;
+            this.#ball.destroy();
+            this.#ballDirection = this.#startBallDirection;
+            this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
+            this.#isBallSticked = true;
+            this.#ball = this.draw.image(this.#paddle.x, this.#paddle.y - this.#paddle.height / 2 - this.#ballRadius, 16, 16, this.#ballImageKey, 1, {r:this.#ballRadius});
+        }
+    }
+
+    #increaseBallSpeed = (incSpeed) => {
+        if (this.#ballSpeed !== this.#maxBallSpeed) {
+            this.#ballSpeed += incSpeed;
+            if (this.#ballSpeed > this.#maxBallSpeed) {// avoid overflow
+                this.#ballSpeed = this.#maxBallSpeed;
+            }
+            this.#setSpeed();
+        }
+    }
     resize = () => {
         const [w, h] = this.stageData.canvasDimensions;
         

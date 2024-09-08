@@ -8,6 +8,8 @@ export const settings = {
     ballColor: "rgba(10, 10, 10, 1)",
     worldBoundariesColor: "rgba(0, 0, 0, 1)",
     gameControls:[isMobile() ? false : "mouse"],
+    defaultBallSpeed: 1,
+    immutable: false,
     width: 800,
-    height: 640
+    height: 608
 }
