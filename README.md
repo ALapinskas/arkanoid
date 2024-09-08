@@ -28,5 +28,5 @@ Platform hit behavior: https://polarnick.com/blogs/239/2018/school239_105_2018_2
     * fix(avoid) angles near Math.PI/-Math.PI/0 (done)
 
 @toDo 08.09 / 10.37
-    * add control help at the start screen
-    * add optional restart game on win/fail
+    * add control help at the start screen (done)
+    * add optional restart game on win/fail (done)

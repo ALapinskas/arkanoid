@@ -833,28 +833,18 @@ export class ArkanoidStage extends GameStage {
 
         if (blocksLeft === 0) {
             if (this.#currentLevel === 3) {
-                alert("You win!!!");
-                clearInterval(this.#moveInterval);
-                this.#moveInterval = undefined;;
-                this.#ball.destroy();
-                this.#gameBlocks.isRemoved = true; // remove hack
+                if (window.confirm("You win!!! Restart?")) {
+                    window.location.reload();
+                } else {
+                    clearInterval(this.#moveInterval);
+                    this.#moveInterval = undefined;;
+                    this.#ball.destroy();
+                    this.#gameBlocks.isRemoved = true; // remove hack
+                }
             } else {
                 alert("Level#"+this.#currentLevel + " done!");
-                clearInterval(this.#moveInterval);
-                this.#moveInterval = undefined;;
-                this.#ball.destroy();
-                this.#ballDirection = this.#startBallDirection;
-                this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
-                this.#gameBlocks.isRemoved = true; // remove hack
                 this.#currentLevel++;
-                console.log("set ball direction to ", this.#startBallDirection);
-                console.log("ball direction: ", this.#ballDirection);
-                this.stageData._clearBoundaries();
-                //this.iSystem.stopGameStage(CONST.STAGE.GAME);
-                setTimeout(() => {
-                    this.startScene();
-                    //this.iSystem.startGameStage(CONST.STAGE.GAME);
-                }, 32);
+                this.#restartGame();
             }
             
         }
@@ -904,10 +894,13 @@ export class ArkanoidStage extends GameStage {
     #die = () => {
         this.#lives -= 1;
         if (this.#lives < 0) {
-            alert("Game over!!!");
-            clearInterval(this.#moveInterval);
-            this.#moveInterval = undefined;;
-            this.#ball.destroy();
+            if (window.confirm("Game over!!! Restart?")) {
+                window.location.reload();
+            } else {
+                clearInterval(this.#moveInterval);
+                this.#moveInterval = undefined;;
+                this.#ball.destroy();
+            }
         } else {
             alert("You die! Lives left: " + this.#lives);
             this.#setLives();
@@ -916,6 +909,7 @@ export class ArkanoidStage extends GameStage {
             this.#ball.destroy();
             this.#ballDirection = this.#startBallDirection;
             this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
+            this.#setSpeed();
             this.#isBallSticked = true;
             this.#ball = this.draw.image(this.#paddle.x, this.#paddle.y - this.#paddle.height / 2 - this.#ballRadius, 16, 16, this.#ballImageKey, 1, {r:this.#ballRadius});
         }
@@ -929,6 +923,23 @@ export class ArkanoidStage extends GameStage {
             }
             this.#setSpeed();
         }
+    }
+
+    #restartGame = () => {
+        clearInterval(this.#moveInterval);
+        this.#moveInterval = undefined;;
+        this.#ball.destroy();
+        this.#ballDirection = this.#startBallDirection;
+        this.#ballSpeed = this.systemSettings.customSettings.defaultBallSpeed;
+        this.#gameBlocks.isRemoved = true; // remove hack
+        console.log("set ball direction to ", this.#startBallDirection);
+        console.log("ball direction: ", this.#ballDirection);
+        this.stageData._clearBoundaries();
+        //this.iSystem.stopGameStage(CONST.STAGE.GAME);
+        setTimeout(() => {
+            this.startScene();
+            //this.iSystem.startGameStage(CONST.STAGE.GAME);
+        }, 100);
     }
     resize = () => {
         const [w, h] = this.stageData.canvasDimensions;

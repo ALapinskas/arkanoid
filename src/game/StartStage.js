@@ -16,19 +16,23 @@ export class StartStage extends GameStage {
         //Logger.debug("init page");
         this.background = this.draw.rect(0, 0, w, h, this.systemSettings.customSettings.pageBackgroundColor);
 
-        this.navItemSingle = this.draw.text(w/2 + LEFT_SHIFT, h/2 - 40, "Start single", "24px sans", "black");
-        this.navItemOptions = this.draw.text(w/2 + LEFT_SHIFT, h/2, "Options", "24px sans", "black");
+        this.navItemSingle = this.draw.text(w/2 + LEFT_SHIFT, h/2 - 40, "Играть", "24px sans", "black");
+        this.navItemOptions = this.draw.text(w/2 + LEFT_SHIFT, h/2, "Настройки", "24px sans", "black");
         
         this.audio.registerAudio(CONST.AUDIO.MENU_CLICK_AUDIO);
         this.#menuClickMediaElement = this.audio.getAudio(CONST.AUDIO.MENU_CLICK_AUDIO);
     }
 
     start() {
+        
         this.registerEventListeners();
+        this.#drawHelpInfo();
     }
 
     stop() {
         this.unregisterEventListeners();
+        this.helpContainer.remove();
+        delete this.helpContainer;
     }
 
     registerEventListeners() {
@@ -92,6 +96,41 @@ export class StartStage extends GameStage {
         document.body.style.cursor = "default";
     }
 
+    #drawHelpInfo = () => {
+        this.helpContainer = document.createElement("div");
+        this.helpContainer.style.display = "flex";
+        this.helpContainer.style["flex-flow"] = "column";
+        this.helpContainer.style["justify-content"] = "center";
+        this.helpContainer.style.width = "fit-content";
+        this.helpContainer.style.marginLeft = "auto";
+        this.helpContainer.style.marginRight = "auto";
+
+        const container = document.createElement("div");
+        container.style.zIndex = "2";
+
+        const helpTextPar1 = document.createElement("p"),
+            helpTextPar2 = document.createElement("p"),
+            helpTextPar3 = document.createElement("p");
+
+        helpTextPar1.innerText = "Управление: ";
+        helpTextPar2.innerHTML = "Для начала игры наведите мышкой на 'Играть' и щелкните левой кнопкой,<br>\
+        В игре используйте стрелки влево вправо ← →, либо a d на клавиатуре для движения каретки,<br> \
+        Чтобы бросить шарик используйте пробел(Space bar),<br> \
+        После броска шарик будет отскакивать от препятствий и каретки и постепенно увеличивать скорость,<br> \
+        Блоки зеленого(1 удар) синего(2 удара) и оранжевого(3 удара) цвета будут разрушаться, остальные - нет,<br> \
+        Уничтожьте все разрушаемые блоки чтобы перейти на следующий уровень.";
+
+        helpTextPar3.innerText = "В меню настроек можно изменить стартовую скорость шарика и включить бессмертие.";
+
+        container.appendChild(helpTextPar1);
+        container.appendChild(helpTextPar2);
+        container.appendChild(helpTextPar3);
+
+        this.helpContainer.appendChild(container);
+        document.body.appendChild(this.helpContainer);
+        document.getElementsByTagName("canvas")[0].style["position"] = "absolute";
+    }
+
 
     resize = () => {
         const [w, h] = this.stageData.canvasDimensions;
@@ -103,5 +142,11 @@ export class StartStage extends GameStage {
 
         this.background.width = w;
         this.background.height = h;
+
+        const container = this.helpContainer;
+        
+        if (container) {
+            container.style.marginTop = Math.round((h - container.clientHeight) / 2) - 200 + "px";
+        }
     }
 }
