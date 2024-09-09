@@ -146,13 +146,18 @@ export class ArkanoidStage extends GameStage {
     #paddle;
     #startBallDirection = Math.PI / 1.6;
     #ballDirection = Math.PI / 1.6;
-    #barSpeed = 5;
+    #paddleStep = 5;
+    #paddleSpeedInterval = 10;
     #immutable = false;
     #maxBallSpeed = 5; /// 5 is max speed without bugs!
     #ballSpeed = 5; 
     #ballMoveInterval = 1; // ms
     #ballRadius = 5;
     #ball;
+
+    #paddleMoveEvent;
+    #moveLeft = false;
+    #moveRight = false;
 
     #cornerHitBallSpeedIncrease = 0.05;
     #blockHitBallSpeedIncrease = 0.01;
@@ -241,12 +246,12 @@ export class ArkanoidStage extends GameStage {
         const background = this.draw.rect(0, 0, w, h, this.systemSettings.customSettings.gameBackgroundColor);
 
         const helpTitle = "Управление";
-        const helpText = "Используйте стрелки влево вправо ← →, либо a d на клавиатуре для движения каретки,<br> \
+        const helpText = "Используйте стрелки влево вправо ← →, либо a d на клавиатуре для движения платформы,<br> \
                 Чтобы бросить шарик используйте пробел(Space bar),<br> \
-                После броска шарик будет отскакивать от препятствий и каретки и постепенно увеличивать скорость,<br> \
+                После броска шарик будет отскакивать от препятствий и платформы и постепенно увеличивать скорость,<br> \
                 Блоки зеленого(1 удар) синего(2 удара) и оранжевого(3 удара) цвета будут разрушаться, остальные - нет,<br> \
                 Чтобы перейти на следующий уровень, уничтожьте все разрушаемые блоки. <br> \
-                Если шарик вылетит за каретку - вы его теряете, <br> \
+                Если шарик вылетит за платформу - вы его теряете, <br> \
                 Всего три шарика, при потере всех - вы проигрывайте. <br> \
                 Чтобы победить, пройдите все уровни, не потеряв всех шариков.";
         const helpClose = "Понятно";
@@ -373,19 +378,46 @@ export class ArkanoidStage extends GameStage {
             newXCoord = this.#paddle.x;
 
         keyPressed[code] = true;
-        if (keyPressed["ArrowLeft"] || keyPressed["KeyA"]) {
-            newXCoord = newXCoord - this.#barSpeed;
-        }
-        if (keyPressed["ArrowRight"] || keyPressed["KeyD"]) {
-            newXCoord = newXCoord + this.#barSpeed;
-        }
-        if (!this.isBoundariesCollision(newXCoord, this.#paddle.y, this.#paddle)) {
-            this.#paddle.x = newXCoord;
-            if (this.#isBallSticked) {
-                this.#ball.x = newXCoord;
-            }
-        }
-        if (keyPressed["Space"]) {
+
+        const pressedLeft = keyPressed["ArrowLeft"] || keyPressed["KeyA"],
+            pressedRight = keyPressed["ArrowRight"] || keyPressed["KeyD"];
+
+        if (pressedLeft && pressedRight) {
+            clearInterval(this.#paddleMoveEvent);
+            this.#paddleMoveEvent = null;
+            this.#moveLeft = false;
+            this.#moveRight = false;
+        } else if (pressedLeft && !this.#moveLeft) {
+            this.#paddleMoveEvent = setInterval(() => {
+                newXCoord = newXCoord - this.#paddleStep;
+                if (!this.isBoundariesCollision(newXCoord, this.#paddle.y, this.#paddle)) {
+                    this.#paddle.x = newXCoord;
+                    if (this.#isBallSticked) {
+                        this.#ball.x = newXCoord;
+                    }
+                    this.#moveLeft = true;
+                } else {
+                    clearInterval(this.#paddleMoveEvent);
+                    this.#paddleMoveEvent = null;
+                    this.#moveLeft = false;
+                }
+            },this.#paddleSpeedInterval);
+        } else if (pressedRight && !this.#moveRight) {
+            this.#paddleMoveEvent = setInterval(() => {
+                newXCoord = newXCoord + this.#paddleStep;
+                if (!this.isBoundariesCollision(newXCoord, this.#paddle.y, this.#paddle)) {
+                    this.#paddle.x = newXCoord;
+                    if (this.#isBallSticked) {
+                        this.#ball.x = newXCoord;
+                    }
+                    this.#moveRight = true;
+                } else {
+                    clearInterval(this.#paddleMoveEvent);
+                    this.#paddleMoveEvent = null;
+                    this.#moveRight = false;
+                }
+            },this.#paddleSpeedInterval);
+        } else if (keyPressed["Space"]) {
             console.log("space pressed");
             if (this.#isBallSticked) {
                 this.#isBallSticked = false;
@@ -849,8 +881,25 @@ export class ArkanoidStage extends GameStage {
     }
 
     #removeKeyAction = (event) => {
-        const code = event.code;
-        this.#keyPressed[code] = false;
+        const code = event.code,
+            keyPressed = this.#keyPressed;
+            keyPressed[code] = false;
+
+        const pressedLeft = keyPressed["ArrowLeft"] || keyPressed["KeyA"],
+            pressedRight = keyPressed["ArrowRight"] || keyPressed["KeyD"];
+        console.log("remove key");
+        console.log(keyPressed);
+        console.log("move: ", this.#moveLeft);
+        if (!pressedLeft && this.#moveLeft) {
+            clearInterval(this.#paddleMoveEvent);
+            this.#paddleMoveEvent = null;
+            this.#moveLeft = false;
+        }
+        if (!pressedRight && this.#moveRight) {
+            clearInterval(this.#paddleMoveEvent);
+            this.#paddleMoveEvent = null;
+            this.#moveRight = false;
+        }
     };
 
     #countBlocksLeft() {

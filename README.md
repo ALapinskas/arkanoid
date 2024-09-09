@@ -35,3 +35,7 @@ Platform hit behavior: https://polarnick.com/blogs/239/2018/school239_105_2018_2
     * add bootstrap lib (done)
     * add win/fail modals (done)
     * add boundaries (done)
+
+@toDo 09.09 / 11.40 
+    * paddle control fix
+    * paddle speed increase
