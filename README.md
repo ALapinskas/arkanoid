@@ -44,3 +44,6 @@ Platform hit behavior: https://polarnick.com/blogs/239/2018/school239_105_2018_2
     * paddle corner hit issues (done)
     * remove debug info (done)
     * create js bundle (done)
+
+@toDo 09.09 / 18.01
+    * fix chrome@128.0.6613.120 collision issue (done)
