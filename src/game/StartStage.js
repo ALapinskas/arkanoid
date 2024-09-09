@@ -26,12 +26,12 @@ export class StartStage extends GameStage {
     start() {
         
         this.registerEventListeners();
-        this.#drawHelpInfo();
+        //this.#drawHelpInfo();
     }
 
     stop() {
         this.unregisterEventListeners();
-        this.helpContainer.remove();
+        //this.helpContainer.remove();
         delete this.helpContainer;
     }
 
@@ -112,13 +112,8 @@ export class StartStage extends GameStage {
             helpTextPar2 = document.createElement("p"),
             helpTextPar3 = document.createElement("p");
 
-        helpTextPar1.innerText = "Управление: ";
-        helpTextPar2.innerHTML = "Для начала игры наведите мышкой на 'Играть' и щелкните левой кнопкой,<br>\
-        В игре используйте стрелки влево вправо ← →, либо a d на клавиатуре для движения каретки,<br> \
-        Чтобы бросить шарик используйте пробел(Space bar),<br> \
-        После броска шарик будет отскакивать от препятствий и каретки и постепенно увеличивать скорость,<br> \
-        Блоки зеленого(1 удар) синего(2 удара) и оранжевого(3 удара) цвета будут разрушаться, остальные - нет,<br> \
-        Уничтожьте все разрушаемые блоки чтобы перейти на следующий уровень.";
+        helpTextPar1.innerText = "";
+        helpTextPar2.innerHTML = 
 
         helpTextPar3.innerText = "В меню настроек можно изменить стартовую скорость шарика и включить бессмертие.";
 

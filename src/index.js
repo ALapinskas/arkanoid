@@ -5,6 +5,11 @@ import { StartStage } from "./game/StartStage.js";
 import { CONST } from "./constants.js";
 import { SettingsStage } from "./game/SettingsStage.js";
 
+// Import our custom CSS
+import './scss/styles.scss';
+// Import all of Bootstrap's JS
+
+
 SystemSettings.customSettings = settings;
 SystemSettings.worldSize.width = settings.width;
 SystemSettings.worldSize.height = settings.height;

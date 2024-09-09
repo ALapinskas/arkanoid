@@ -2,6 +2,9 @@ import { GameStage } from "jsge";
 import { CONST } from "../constants.js";
 import { utils } from "jsge";
 
+import { Modal } from 'bootstrap';
+
+
 const CORNER_SHIFT = Math.PI/16;
 const isPointRectIntersect = utils.isPointRectIntersect;
 
@@ -237,6 +240,27 @@ export class ArkanoidStage extends GameStage {
         
         const background = this.draw.rect(0, 0, w, h, this.systemSettings.customSettings.gameBackgroundColor);
 
+        const helpTitle = "Управление";
+        const helpText = "Используйте стрелки влево вправо ← →, либо a d на клавиатуре для движения каретки,<br> \
+                Чтобы бросить шарик используйте пробел(Space bar),<br> \
+                После броска шарик будет отскакивать от препятствий и каретки и постепенно увеличивать скорость,<br> \
+                Блоки зеленого(1 удар) синего(2 удара) и оранжевого(3 удара) цвета будут разрушаться, остальные - нет,<br> \
+                Чтобы перейти на следующий уровень, уничтожьте все разрушаемые блоки. <br> \
+                Если шарик вылетит за каретку - вы его теряете, <br> \
+                Всего три шарика, при потере всех - вы проигрывайте. <br> \
+                Чтобы победить, пройдите все уровни, не потеряв всех шариков.";
+        const helpClose = "Понятно";
+
+        this.helpModalCont = this.createModal("helpM", helpTitle, helpText, helpClose);
+        this.helpModal = new Modal(this.helpModalCont, {});
+        this.helpModal.show();
+
+        this.winModalCont = this.createModal("winM", "Победа!!!", "Поздравляем вы одержали победу, хотите сыграть еще раз?", "Закрыть", "Начать заново");
+        this.winModal = new Modal(this.winModalCont, {});
+
+        this.gameOverModalCont = this.createModal("looseM", "Вы проиграли!", "К сожалению вы проиграли. Хотите попробовать еще раз?", "Закрыть", "Начать заново");
+        this.gameOverModal = new Modal(this.gameOverModalCont, {});
+        
         this.#immutable = this.systemSettings.customSettings.immutable;
         this.#infoBlock.style.display = "flex";
         
@@ -322,7 +346,10 @@ export class ArkanoidStage extends GameStage {
     };
 
     #mouseClickEvent = (event) => {
-
+        console.log("mouse click: ", event);
+        if (event.target.id === "restart-btn") {
+            window.location.reload();
+        }
     };
 
     unregisterEventListeners() {
@@ -833,14 +860,11 @@ export class ArkanoidStage extends GameStage {
 
         if (blocksLeft === 0) {
             if (this.#currentLevel === 3) {
-                if (window.confirm("You win!!! Restart?")) {
-                    window.location.reload();
-                } else {
-                    clearInterval(this.#moveInterval);
-                    this.#moveInterval = undefined;;
-                    this.#ball.destroy();
-                    this.#gameBlocks.isRemoved = true; // remove hack
-                }
+                clearInterval(this.#moveInterval);
+                this.#moveInterval = undefined;;
+                this.#ball.destroy();
+                this.#gameBlocks.isRemoved = true; // remove hack
+                this.winModal.show();
             } else {
                 alert("Level#"+this.#currentLevel + " done!");
                 this.#currentLevel++;
@@ -894,15 +918,12 @@ export class ArkanoidStage extends GameStage {
     #die = () => {
         this.#lives -= 1;
         if (this.#lives < 0) {
-            if (window.confirm("Game over!!! Restart?")) {
-                window.location.reload();
-            } else {
-                clearInterval(this.#moveInterval);
-                this.#moveInterval = undefined;;
-                this.#ball.destroy();
-            }
+            clearInterval(this.#moveInterval);
+            this.#moveInterval = undefined;;
+            this.#ball.destroy();
+            this.gameOverModal.show();
         } else {
-            alert("You die! Lives left: " + this.#lives);
+            alert("Шарик потерян! Осталось: " + this.#lives);
             this.#setLives();
             clearInterval(this.#moveInterval);
             this.#moveInterval = undefined;;
@@ -940,6 +961,31 @@ export class ArkanoidStage extends GameStage {
             this.startScene();
             //this.iSystem.startGameStage(CONST.STAGE.GAME);
         }, 100);
+    }
+
+    createModal = (id, title, text, close, restart) => {
+        const html = `<div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"> 
+                <h5 class="modal-title">${title}</h5>
+                </div>
+                <div class="modal-body">
+                <p>${text}</p>
+                </div>
+                <div class="modal-footer"> ` + 
+                (restart ? `<button type="button" id="restart-btn" class="btn btn-secondary">${restart}</button>` : ``) +
+                `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${close}</button>
+                </div>
+            </div>
+            </div>`;
+        const container = document.createElement("div");
+        container.id = id;
+        container.classList.add("modal");
+        container.classList.add("fade");
+        container.innerHTML = html;
+        document.body.appendChild(container);
+
+        return container;
     }
     resize = () => {
         const [w, h] = this.stageData.canvasDimensions;

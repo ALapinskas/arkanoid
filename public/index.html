@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <title>Awesome video app</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <meta http-equiv="Pragma" content="no-cache">
     <style>
@@ -8,9 +9,12 @@
             overflow: hidden;
             margin: 0;
         }
-        .container {
-            background-color: #ebf9ffd9;
-            width: 800px;
+        canvas {
+            position: absolute;
+        }
+        .container-cust {
+            background-color: #333;
+            width: 804px;
             margin: auto;
         }
         #info {
@@ -22,22 +26,29 @@
             justify-content: space-around;
             align-items: center;
             height: 100%;
+            color: #fff;
         }
         #game_map {
             display: flex;
             justify-content: center;
+            
+        }
+
+        #game_map canvas {
+            border-left: 2px solid #000;
+            border-right: 2px solid #000;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-cust">
         <div id="info">
             <div id="info-content">
-                <span id="level-cont">Level: <span id="level"></span></span><span id="speed-cont">Speed: <span id="speed"></span></span><span id="blocks-cont">Blocks left: <span id="blocks"></span></span><span id="lives-cont">Lives: <span id="lives"></span></span>
+                <span id="level-cont">Уровень: <span id="level"></span></span><span id="speed-cont">Скорость: <span id="speed"></span></span><span id="blocks-cont">Блоков осталось: <span id="blocks"></span></span><span id="lives-cont">Шариков: <span id="lives"></span></span>
             </div>
         </div>
         <div id="game_map"></div>
     </div>
-    
+          
     <script type="module" src="./bundle.js?r=2"></script>
 </body>

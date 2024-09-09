@@ -1,6 +1,6 @@
 {
   "name": "arkanoid",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -24,11 +24,18 @@
   },
   "homepage": "https://github.com/ALapinskas/arkanoid#readme",
   "devDependencies": {
+    "autoprefixer": "10.4.20",
+    "css-loader": "7.1.2",
+    "postcss-loader": "8.1.1",
+    "sass": "1.77.6",
+    "sass-loader": "16.0.1",
+    "style-loader": "4.0.0",
     "webpack": "5.94.0",
-    "webpack-cli": "^5.1.4",
+    "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.0.4"
   },
   "dependencies": {
+    "bootstrap": "5.3.3",
     "jsge": "^1.5.2"
   }
 }
