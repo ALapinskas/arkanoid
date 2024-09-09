@@ -47,3 +47,8 @@ Platform hit behavior: https://polarnick.com/blogs/239/2018/school239_105_2018_2
 
 @toDo 09.09 / 18.01
     * fix chrome@128.0.6613.120 collision issue (done)
+
+
+To launch with webpack dev-server:
+npm i
+npm start
