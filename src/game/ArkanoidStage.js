@@ -151,7 +151,7 @@ export class ArkanoidStage extends GameStage {
     #immutable = false;
     #maxBallSpeed = 4; /// 4 is max speed without bugs!
     #ballSpeed = 4; 
-    #ballMoveInterval = 1; // ms
+    #ballMoveInterval = 10; // ms
     #ballRadius = 5;
     #ball;
 
