@@ -73,6 +73,7 @@ export class StartStage extends GameStage {
 
         if (isPointRectIntersect(event.offsetX, event.offsetY, this.navItemSingle.boundariesBox)) {
             this.#menuClickMediaElement.play();
+            document.getElementById("game_map").style["background-color"] = "#c2c5cc";
             this.iSystem.stopGameStage(CONST.STAGE.START);
             this.iSystem.startGameStage(CONST.STAGE.GAME);
         }

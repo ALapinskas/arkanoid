@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <meta http-equiv="Pragma" content="no-cache">
     <style>
+        html {
+            height:100%;
+        }
         body {
             overflow: hidden;
             margin: 0;
+            height: 100%;
         }
         canvas {
             position: absolute;
         }
         .container-cust {
             background-color: #333;
+            border-left: 2px solid #000;
+            border-right: 2px solid #000;
             width: 804px;
             margin: auto;
+            height: 100%;
         }
         #info {
             height: 32px;
@@ -31,13 +38,19 @@
         #game_map {
             display: flex;
             justify-content: center;
-            
+            height: 100%;
+            background-color: #ebf9ff;
+        }
+        
+        #options-cont {
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            width: 300px;
+            position: absolute;
+            left: calc(50% - 150px);
         }
 
-        #game_map canvas {
-            border-left: 2px solid #000;
-            border-right: 2px solid #000;
-        }
     </style>
 </head>
 <body>
@@ -50,5 +63,5 @@
         <div id="game_map"></div>
     </div>
           
-    <script type="module" src="./bundle.js?r=2"></script>
+    <script type="module" src="./index.es6.min.js"></script>
 </body>

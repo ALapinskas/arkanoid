@@ -45,21 +45,14 @@ export class SettingsStage extends GameStage {
             speedInput3Label = document.createElement("label"),
             speedInput4 = document.createElement("input"),
             speedInput4Label = document.createElement("label"),
-            speedInput5 = document.createElement("input"),
-            speedInput5Label = document.createElement("label"),
             immutableContainer = document.createElement("div"),
             immutableInput = document.createElement("input"),
             immutableLabel = document.createElement('label'),
             defaultSpeed = this.systemSettings.customSettings.defaultBallSpeed;
 
         this.optionsMenuContainer = document.createElement("div");
-        this.optionsMenuContainer.style.display = "flex";
-        this.optionsMenuContainer.style["flex-flow"] = "column";
-        this.optionsMenuContainer.style["justify-content"] = "center";
-        this.optionsMenuContainer.style.width = "fit-content";
-        this.optionsMenuContainer.style.marginLeft = "auto";
-        this.optionsMenuContainer.style.marginRight = "auto";
-
+        this.optionsMenuContainer.id = "options-cont";
+        
         this.#volumeInput = document.createElement("input");
         this.#volumeInput["id"] = "volumeInput";
         this.#volumeInput["type"] = "range";
@@ -112,13 +105,6 @@ export class SettingsStage extends GameStage {
         speedInput4Label.innerText = "4";
         speedInput4Label.for = "speedInput4";
 
-        speedInput5.type = "radio";
-        speedInput5.name = "speedInput";
-        speedInput5.value = "5";
-        speedInput5.id = "speedInput5";
-        speedInput5.checked = defaultSpeed === 5;
-        speedInput5Label.innerText = "5";
-        speedInput5Label.for = "speedInput5";
 
         speedContainer.appendChild(speedLabel);
         speedContainer.appendChild(speedInput1);
@@ -129,8 +115,6 @@ export class SettingsStage extends GameStage {
         speedContainer.appendChild(speedInput3Label);
         speedContainer.appendChild(speedInput4);
         speedContainer.appendChild(speedInput4Label);
-        speedContainer.appendChild(speedInput5);
-        speedContainer.appendChild(speedInput5Label);
         speedContainer.style["zIndex"] = 2;
 
         this.optionsMenuContainer.appendChild(speedContainer);
@@ -146,7 +130,7 @@ export class SettingsStage extends GameStage {
 
         this.optionsMenuContainer.appendChild(immutableContainer);
 
-        document.body.appendChild(this.optionsMenuContainer);
+        document.body.prepend(this.optionsMenuContainer);
         document.getElementsByTagName("canvas")[0].style["position"] = "absolute";
         this.#fixContainerPosition();
     } 

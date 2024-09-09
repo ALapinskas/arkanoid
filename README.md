@@ -37,5 +37,10 @@ Platform hit behavior: https://polarnick.com/blogs/239/2018/school239_105_2018_2
     * add boundaries (done)
 
 @toDo 09.09 / 11.40 
-    * paddle control fix
-    * paddle speed increase
+    * paddle control fix (done)
+    * paddle speed increase (done)
+
+@toDo 09.09 / 17.55
+    * paddle corner hit issues (done)
+    * remove debug info (done)
+    * create js bundle (done)
