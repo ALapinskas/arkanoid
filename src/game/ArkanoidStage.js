@@ -170,6 +170,7 @@ export class ArkanoidStage extends GameStage {
     #tilemapKeyLevel2 = "blocksMap2";
     #tilemapKeyLevel3 = "blocksMap3";
     #ballImageKey  = "ball-key";
+    #spritesheetKey = "spritesheet-breakout-f";
     #paddleImageKey = "paddle-key";
     #gameBlocks;
 
@@ -201,43 +202,43 @@ export class ArkanoidStage extends GameStage {
     }
 
     register() {
-        this.iLoader.addImage(this.#ballImageKey, "/assets/images/ball.png");
-        this.iLoader.addImage(this.#paddleImageKey, "/assets/images/paddle.png");
-        this.iLoader.addImage("spritesheet-breakout-f", "/assets/images/spritesheet-breakout-fixed.png");
-        this.iLoader.addTileMap(this.#tilemapKeyLevel1, "/assets/level1.tmj");
-        this.iLoader.addTileMap(this.#tilemapKeyLevel2, "/assets/level2.tmj");
-        this.iLoader.addTileMap(this.#tilemapKeyLevel3, "/assets/level3.tmj");
-        this.iLoader.addImage(CONST.IMAGE.PADDLE_BLUE, "/assets/images/paddleBlu.png");
+        this.iLoader.addImage(this.#ballImageKey, "./assets/images/ball.png");
+        this.iLoader.addImage(this.#paddleImageKey, "./assets/images/paddle.png");
+        this.iLoader.addImage(this.#spritesheetKey, "./assets/images/spritesheet-breakout-fixed.png");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel1, "./assets/level1.tmj");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel2, "./assets/level2.tmj");
+        this.iLoader.addTileMap(this.#tilemapKeyLevel3, "./assets/level3.tmj");
+        this.iLoader.addImage(CONST.IMAGE.PADDLE_BLUE, "./assets/images/paddleBlu.png");
 
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_0, "/assets/audio/impactTin_medium_000.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_1, "/assets/audio/impactTin_medium_001.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_2, "/assets/audio/impactTin_medium_002.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_3, "/assets/audio/impactTin_medium_003.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_4, "/assets/audio/impactTin_medium_004.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_0, "./assets/audio/impactTin_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_1, "./assets/audio/impactTin_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_2, "./assets/audio/impactTin_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_3, "./assets/audio/impactTin_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_TIN_4, "./assets/audio/impactTin_medium_004.ogg");
 
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_0, "/assets/audio/impactGlass_medium_000.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_1, "/assets/audio/impactGlass_medium_001.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_2, "/assets/audio/impactGlass_medium_002.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_3, "/assets/audio/impactGlass_medium_003.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_4, "/assets/audio/impactGlass_medium_004.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_0, "./assets/audio/impactGlass_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_1, "./assets/audio/impactGlass_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_2, "./assets/audio/impactGlass_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_3, "./assets/audio/impactGlass_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_GLASS_4, "./assets/audio/impactGlass_medium_004.ogg");
 
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_0, "/assets/audio/impactSoft_medium_000.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_1, "/assets/audio/impactSoft_medium_001.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_2, "/assets/audio/impactSoft_medium_002.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_3, "/assets/audio/impactSoft_medium_003.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_4, "/assets/audio/impactSoft_medium_004.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_0, "./assets/audio/impactSoft_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_1, "./assets/audio/impactSoft_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_2, "./assets/audio/impactSoft_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_3, "./assets/audio/impactSoft_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_SOFT_4, "./assets/audio/impactSoft_medium_004.ogg");
 
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_0, "/assets/audio/impactMetal_medium_000.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_1, "/assets/audio/impactMetal_medium_001.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_2, "/assets/audio/impactMetal_medium_002.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_3, "/assets/audio/impactMetal_medium_003.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_4, "/assets/audio/impactMetal_medium_004.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_0, "./assets/audio/impactMetal_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_1, "./assets/audio/impactMetal_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_2, "./assets/audio/impactMetal_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_3, "./assets/audio/impactMetal_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_METAL_4, "./assets/audio/impactMetal_medium_004.ogg");
 
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_0, "/assets/audio/impactPlate_medium_000.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_1, "/assets/audio/impactPlate_medium_001.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_2, "/assets/audio/impactPlate_medium_002.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_3, "/assets/audio/impactPlate_medium_003.ogg");
-        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_4, "/assets/audio/impactPlate_medium_004.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_0, "./assets/audio/impactPlate_medium_000.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_1, "./assets/audio/impactPlate_medium_001.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_2, "./assets/audio/impactPlate_medium_002.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_3, "./assets/audio/impactPlate_medium_003.ogg");
+        this.iLoader.addAudio(CONST.AUDIO.IMPACT_PLATE_4, "./assets/audio/impactPlate_medium_004.ogg");
     }
 
     init() {
@@ -325,6 +326,7 @@ export class ArkanoidStage extends GameStage {
         
         this.#countBlocksLeft();
         this.#isBallSticked = true;
+        // image index for spritesheet is 71
         this.#ball = this.draw.image(this.#paddle.x, this.#paddle.y - this.#paddle.height / 2 - this.#ballRadius, 16, 16, this.#ballImageKey, 1, {r:this.#ballRadius});
         this.#setLives();
         this.#setLevel();
