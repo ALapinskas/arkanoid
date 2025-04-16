@@ -15,7 +15,9 @@
     "url": "git+https://github.com/ALapinskas/arkanoid.git"
   },
   "keywords": [
-    "arkanoid"
+    "arkanoid",
+    "game",
+    "html"
   ],
   "author": "Arturas-Alfredas Lapinskas",
   "license": "MIT",
