@@ -2,8 +2,8 @@
 
 Was developed for game jam in a week. \
 Resources used: \
-* Level maps build with [https://www.mapeditor.org/](Tiled editor). \
-* Render, tilemaps and boundaries: [https://github.com/ALapinskas/jsge](JavascriptGameEngine/Jsge) \
+* Level maps build with [https://www.mapeditor.org](Tiled editor). \
+* Render, tilemaps and boundaries: [https://github.com/ALapinskas/jsge](JavascriptGameEngine) \
 * Images from here: https://petraheim.itch.io/breakout-pixelart \
 * Audio from here: https://www.kenney.nl/assets/category:Audio \
 * Circle/line intersection: https://gist.github.com/milkbread/11000965 \
